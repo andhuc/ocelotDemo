@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "APIGateway", "APIGateway\AP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Serivce", "Test.Serivce\Test.Serivce.csproj", "{F5953D4C-CCA4-44EF-8E7C-BD7DCFADBFF4}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Auth.Service", "Auth.Service\Auth.Service.csproj", "{D203719E-0734-4F9B-9D44-BE2A86DFA3EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Products.Service", "Products.Service\Products.Service.csproj", "{C89BB9B9-DD2D-4EF9-9EA8-CE2EE68F13AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{F5953D4C-CCA4-44EF-8E7C-BD7DCFADBFF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F5953D4C-CCA4-44EF-8E7C-BD7DCFADBFF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F5953D4C-CCA4-44EF-8E7C-BD7DCFADBFF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D203719E-0734-4F9B-9D44-BE2A86DFA3EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D203719E-0734-4F9B-9D44-BE2A86DFA3EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D203719E-0734-4F9B-9D44-BE2A86DFA3EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D203719E-0734-4F9B-9D44-BE2A86DFA3EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C89BB9B9-DD2D-4EF9-9EA8-CE2EE68F13AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C89BB9B9-DD2D-4EF9-9EA8-CE2EE68F13AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C89BB9B9-DD2D-4EF9-9EA8-CE2EE68F13AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C89BB9B9-DD2D-4EF9-9EA8-CE2EE68F13AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
