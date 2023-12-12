@@ -62,6 +62,8 @@ namespace Auth.Service.Models
                 entity.Property(e => e.Username)
                     .HasMaxLength(50)
                     .HasColumnName("username");
+
+                entity.Property(e => e.Status).HasColumnName("status");
             });
 
             OnModelCreatingPartial(modelBuilder);

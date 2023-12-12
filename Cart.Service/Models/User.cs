@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Auth.Service.Models
+namespace Cart.Service.Models
 {
     public partial class User
     {
         public User()
         {
+            Orders = new HashSet<Order>();
         }
 
         public int UserId { get; set; }
@@ -16,6 +17,8 @@ namespace Auth.Service.Models
         public int Role { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public Boolean Status { get; set; }
+        public bool? Status { get; set; }
+
+        public virtual ICollection<Order> Orders { get; set; }
     }
 }

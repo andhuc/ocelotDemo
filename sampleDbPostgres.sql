@@ -6,7 +6,8 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     role INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status BOOLEAN DEFAULT true -- Added status column with default value true
 );
 
 -- Create Addresses Table
@@ -17,7 +18,8 @@ CREATE TABLE addresses (
     city VARCHAR(100) NOT NULL,
     postal_code VARCHAR(20) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status BOOLEAN DEFAULT true -- Added status column with default value true
 );
 
 -- Create Categories Table
@@ -25,7 +27,8 @@ CREATE TABLE categories (
     category_id SERIAL PRIMARY KEY,
     category_name VARCHAR(50) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status BOOLEAN DEFAULT true -- Added status column with default value true
 );
 
 -- Create Products Table
@@ -35,7 +38,8 @@ CREATE TABLE products (
     price DECIMAL(10, 2) NOT NULL,
     category_id INT REFERENCES categories(category_id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status BOOLEAN DEFAULT true -- Added status column with default value true
 );
 
 -- Create Orders Table
@@ -45,7 +49,8 @@ CREATE TABLE orders (
     order_date DATE NOT NULL,
     total_amount DECIMAL(10, 2) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status BOOLEAN DEFAULT true -- Added status column with default value true
 );
 
 -- Create Order Items Table
@@ -56,7 +61,8 @@ CREATE TABLE order_items (
     quantity INT NOT NULL,
     item_price DECIMAL(10, 2) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status BOOLEAN DEFAULT true -- Added status column with default value true
 );
 
 -- Create Reviews Table
@@ -68,7 +74,8 @@ CREATE TABLE reviews (
     comment TEXT,
     review_date DATE NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status BOOLEAN DEFAULT true -- Added status column with default value true
 );
 
 -- Create Trigger to Update updated_at on Update
@@ -148,7 +155,54 @@ INSERT INTO products (product_name, price, category_id) VALUES
     ('Programming Book', 29.99, 3),
     ('Coffee Table', 149.99, 4),
     ('Board Game', 24.99, 5),
-    ('Running Shoes', 79.99, 6);
+    ('Running Shoes', 79.99, 6),
+    ('Laptop', 899.99, 1),
+    ('Hoodie', 29.99, 2),
+    ('Artificial Intelligence Book', 39.99, 3),
+    ('Dining Table', 249.99, 4),
+    ('Puzzle Game', 19.99, 5),
+    ('Running Jacket', 59.99, 6),
+    ('Wireless Earbuds', 79.99, 1),
+    ('Jeans', 39.99, 2),
+    ('Science Fiction Book', 29.99, 3),
+    ('Digital Camera', 499.99, 1),
+    ('Sweater', 34.99, 2),
+    ('History Book', 27.99, 3),
+    ('Couch', 499.99, 4),
+    ('Chess Set', 29.99, 5),
+    ('Hiking Boots', 89.99, 6),
+    ('Tablet', 349.99, 1),
+    ('Jacket', 49.99, 2),
+    ('Cookbook', 24.99, 3),
+    ('Office Chair', 149.99, 4),
+    ('Card Game', 14.99, 5),
+    ('Soccer Ball', 19.99, 6),
+    -- Add more products here...
+    ('Fitness Tracker', 79.99, 1),
+    ('Graphic T-shirt', 21.99, 2),
+    ('Psychology Book', 31.99, 3),
+    ('End Table', 89.99, 4),
+    ('Strategy Board Game', 34.99, 5),
+    ('Trail Running Shoes', 99.99, 6),
+    ('Desktop Computer', 1299.99, 1),
+    ('Winter Jacket', 69.99, 2),
+    ('Mystery Novel', 26.99, 3),
+    ('Bookshelf', 199.99, 4),
+    ('Card Deck', 9.99, 5),
+    ('Basketball', 24.99, 6),
+    -- Add more products here...
+    ('Smartwatch', 159.99, 1),
+    ('Polo Shirt', 25.99, 2),
+    ('Self-Help Book', 19.99, 3),
+    ('Recliner Chair', 349.99, 4),
+    ('Chess Board', 49.99, 5),
+    ('Mountain Bike', 499.99, 6),
+    ('Bluetooth Speaker', 49.99, 1),
+    ('Denim Jacket', 44.99, 2),
+    ('Classic Literature Book', 29.99, 3),
+    ('Sectional Sofa', 899.99, 4),
+    ('Dice Set', 7.99, 5),
+    ('Football', 29.99, 6);
 
 -- Insert Sample Data into Orders Table
 INSERT INTO orders (user_id, order_date, total_amount) VALUES

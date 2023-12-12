@@ -3,6 +3,7 @@
     {
       "DownstreamPathTemplate": "/Auth/{everything}",
       "DownstreamScheme": "http",
+      "SwaggerKey": "Auth",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
@@ -15,7 +16,7 @@
     {
       "DownstreamPathTemplate": "/Products/{everything}",
       "DownstreamScheme": "http",
-      "SwaggerKey": "test",
+      "SwaggerKey": "Products",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
@@ -27,12 +28,15 @@
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer",
         "AllowedScopes": []
+      },
+      "RouteClaimsRequirement": {
+        "Role": 1
       }
     },
     {
       "DownstreamPathTemplate": "/Products/{everything}",
       "DownstreamScheme": "http",
-      "SwaggerKey": "test",
+      "SwaggerKey": "Products",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
@@ -40,7 +44,23 @@
         }
       ],
       "UpstreamPathTemplate": "/api/Products/{everything}",
-      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
+      "DownstreamPathTemplate": "/Cart/{UserId}",
+      "DownstreamScheme": "http",
+      "SwaggerKey": "Order",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5003
+        }
+      ],
+      "ChangeDownstreamPathTemplate": {
+        "UserId": "Claims[UserId] > value"
+      },
+      "UpstreamPathTemplate": "/api/Cart",
+      "UpstreamHttpMethod": [ "Get", "Post" ],
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer",
         "AllowedScopes": []
@@ -49,12 +69,32 @@
   ],
   "SwaggerEndPoints": [
     {
-      "Key": "test",
+      "Key": "Auth",
       "Config": [
         {
-          "Name": "Test API",
+          "Name": "Auth API",
           "Version": "v1",
-          "Url": "http://localhost:5000/swagger/v1/swagger.json"
+          "Url": "http://localhost:5001/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "Products",
+      "Config": [
+        {
+          "Name": "Products API",
+          "Version": "v1",
+          "Url": "http://localhost:5002/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "Order",
+      "Config": [
+        {
+          "Name": "Order API",
+          "Version": "v1",
+          "Url": "http://localhost:5003/swagger/v1/swagger.json"
         }
       ]
     }

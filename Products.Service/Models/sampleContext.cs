@@ -26,7 +26,7 @@ namespace Products.Service.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseLazyLoadingProxies(true);
+                optionsBuilder.UseLazyLoadingProxies(false);
                 optionsBuilder.UseNpgsql(_configuration["DB"]);
             }
         }
@@ -52,6 +52,9 @@ namespace Products.Service.Models
                     .HasColumnType("timestamp without time zone")
                     .HasColumnName("updated_at")
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.Property(e => e.Status)
+                    .HasColumnName("status");
             });
 
             modelBuilder.Entity<Product>(entity =>
@@ -80,6 +83,8 @@ namespace Products.Service.Models
                     .HasColumnName("updated_at")
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+                entity.Property(e => e.Status)
+                    .HasColumnName("status");
             });
 
             OnModelCreatingPartial(modelBuilder);
