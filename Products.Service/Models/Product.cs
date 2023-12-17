@@ -11,7 +11,7 @@ namespace Products.Service.Models
         public int? CategoryId { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public Boolean Status { get; set; }
+        public bool? Status { get; set; }
 
         public virtual Category? Category { get; set; }
     }

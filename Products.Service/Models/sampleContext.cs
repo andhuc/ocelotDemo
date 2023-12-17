@@ -21,12 +21,12 @@ namespace Products.Service.Models
 
         public virtual DbSet<Category> Categories { get; set; } = null!;
         public virtual DbSet<Product> Products { get; set; } = null!;
+        public virtual DbSet<User> Users { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseLazyLoadingProxies(false);
                 optionsBuilder.UseNpgsql(_configuration["DB"]);
             }
         }
@@ -48,13 +48,14 @@ namespace Products.Service.Models
                     .HasColumnName("created_at")
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+                entity.Property(e => e.Status)
+                    .HasColumnName("status")
+                    .HasDefaultValueSql("true");
+
                 entity.Property(e => e.UpdatedAt)
                     .HasColumnType("timestamp without time zone")
                     .HasColumnName("updated_at")
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                entity.Property(e => e.Status)
-                    .HasColumnName("status");
             });
 
             modelBuilder.Entity<Product>(entity =>
@@ -78,13 +79,49 @@ namespace Products.Service.Models
                     .HasMaxLength(100)
                     .HasColumnName("product_name");
 
+                entity.Property(e => e.Status)
+                    .HasColumnName("status")
+                    .HasDefaultValueSql("true");
+
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnType("timestamp without time zone")
+                    .HasColumnName("updated_at")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            });
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.ToTable("users");
+
+                entity.Property(e => e.UserId).HasColumnName("user_id");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("timestamp without time zone")
+                    .HasColumnName("created_at")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.Property(e => e.Email)
+                    .HasMaxLength(100)
+                    .HasColumnName("email");
+
+                entity.Property(e => e.Password)
+                    .HasMaxLength(255)
+                    .HasColumnName("password");
+
+                entity.Property(e => e.Role).HasColumnName("role");
+
+                entity.Property(e => e.Status)
+                    .HasColumnName("status")
+                    .HasDefaultValueSql("true");
+
                 entity.Property(e => e.UpdatedAt)
                     .HasColumnType("timestamp without time zone")
                     .HasColumnName("updated_at")
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                entity.Property(e => e.Status)
-                    .HasColumnName("status");
+                entity.Property(e => e.Username)
+                    .HasMaxLength(50)
+                    .HasColumnName("username");
             });
 
             OnModelCreatingPartial(modelBuilder);

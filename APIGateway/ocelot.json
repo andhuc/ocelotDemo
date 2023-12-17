@@ -31,6 +31,9 @@
       },
       "RouteClaimsRequirement": {
         "Role": 1
+      },
+      "AddQueriesToRequest": {
+        "UserId": "Claims[UserId] > value"
       }
     },
     {
@@ -65,6 +68,26 @@
         "AuthenticationProviderKey": "Bearer",
         "AllowedScopes": []
       }
+    },
+    {
+      "DownstreamPathTemplate": "/System/SystemHistory",
+      "DownstreamScheme": "http",
+      "SwaggerKey": "System",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5004
+        }
+      ],
+      "UpstreamPathTemplate": "/api/System/SystemHistory",
+      "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "RouteClaimsRequirement": {
+        "Role": 1
+      }
     }
   ],
   "SwaggerEndPoints": [
@@ -95,6 +118,16 @@
           "Name": "Order API",
           "Version": "v1",
           "Url": "http://localhost:5003/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "System",
+      "Config": [
+        {
+          "Name": "System API",
+          "Version": "v1",
+          "Url": "http://localhost:5004/swagger/v1/swagger.json"
         }
       ]
     }

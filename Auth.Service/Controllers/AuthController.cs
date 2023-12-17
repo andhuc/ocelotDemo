@@ -21,12 +21,6 @@ public class AuthController : ControllerBase
         _dbContext = dbContext;
     }
 
-    [HttpGet("test")]
-    public IActionResult Test()
-    {
-        return Ok("oke");
-    }
-
     [HttpPost("sign-in")]
     public IActionResult Post([FromBody] UserForm user)
     {
@@ -56,7 +50,7 @@ public class AuthController : ControllerBase
         AuthToken authToken = new AuthToken
         {
             AccessToken = new JwtSecurityTokenHandler().WriteToken(jwt),
-            Expires = TimeSpan.FromMinutes(2).TotalSeconds
+            Expires = TimeSpan.FromMinutes(30).TotalSeconds
         };
 
         return Ok(authToken);
