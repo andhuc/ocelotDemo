@@ -47,6 +47,9 @@ namespace Contract.Service.Models
                 entity.Property(e => e.Title)
                     .HasMaxLength(255)
                     .HasColumnName("title");
+
+                entity.Property(e => e.isSigned)
+                    .HasColumnName("isSigned");
             });
 
             OnModelCreatingPartial(modelBuilder);

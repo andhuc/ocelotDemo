@@ -10,7 +10,6 @@ namespace Contract.Services.Controllers
     public class ContractController : Controller
     {
 
-        private const long MaxFileSize = 5 * 1024 * 1024; // 5 MB limit
         private readonly sampleContext _context;
         private readonly ISignService _signService;
 
@@ -77,7 +76,7 @@ namespace Contract.Services.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        public IActionResult GetContractFile(int id)
+        public IActionResult GetContractFile(int id, bool isSigned = false)
         {
             var contract = _context.Contracts.Find(id);
 
@@ -86,7 +85,7 @@ namespace Contract.Services.Controllers
                 return NotFound(); // Return 404 if the contract is not found
             }
 
-            var filePath = contract.Path; // Assuming 'Path' property contains the file path
+            var filePath = isSigned ? $"wwwroot/signed/{id}.pdf" : contract.Path;
 
             if (!System.IO.File.Exists(filePath))
             {
@@ -120,6 +119,9 @@ namespace Contract.Services.Controllers
                 _signService.SignPdf($"wwwroot/signed/", signatures, contract);
 
                 var fileStream = new FileStream($"wwwroot/signed/{contract.Id}.pdf", FileMode.Open, FileAccess.Read);
+
+                contract.isSigned = true;
+                _context.SaveChanges();
 
                 return File(fileStream, "application/pdf", $"{contract.Title}.pdf");
             }
