@@ -134,6 +134,27 @@ namespace Products.Service.Controllers
             return Ok(product);
         }
 
+        [HttpGet("test")]
+        public async Task<ActionResult<IEnumerable<ProductDTO>>> Test()
+        {
+            var products = await _dbContext.Products
+                .OrderBy(p => p.ProductId)  // You may want to order by a specific property
+                .Select(p => new ProductDTO
+                {
+                    ProductId = p.ProductId,
+                    ProductName = p.ProductName,
+                    Price = p.Price,
+                    CategoryId = p.CategoryId,
+                    Category = p.Category.CategoryName,
+                    CreatedAt = p.CreatedAt,
+                    UpdatedAt = p.UpdatedAt,
+                    Status = p.Status
+                })
+                .ToListAsync();
+
+            return Ok(products);
+        }
+
         // POST: Products/post
         [HttpPost("post")]
         public async Task<ActionResult<Product>> PostProduct(ProductDTO product, int? userId = null)

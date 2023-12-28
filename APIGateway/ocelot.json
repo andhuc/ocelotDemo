@@ -11,7 +11,16 @@
         }
       ],
       "UpstreamPathTemplate": "/api/Auth/{everything}",
-      "UpstreamHttpMethod": [ "Get", "Post" ]
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "5s",
+        "PeriodTimespan": 5,
+        "Limit": 1,
+        "HttpStatusCode": 400,
+        "QuotaExceededMessage": "Please wait!"
+      }
     },
     {
       "DownstreamPathTemplate": "/Products/{everything}",
@@ -47,7 +56,11 @@
         }
       ],
       "UpstreamPathTemplate": "/api/Products/{everything}",
-      "UpstreamHttpMethod": [ "Get" ]
+      "UpstreamHttpMethod": [ "Get" ],
+      "FileCacheOptions": {
+        "TtlSeconds": 60,
+        "Region": "disneyland"
+      }
     },
     {
       "DownstreamPathTemplate": "/Cart/{UserId}",
@@ -87,6 +100,28 @@
       },
       "RouteClaimsRequirement": {
         "Role": 1
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/Contract/{everything}",
+      "DownstreamScheme": "http",
+      "SwaggerKey": "Contract",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5005
+        }
+      ],
+      "UpstreamPathTemplate": "/api/Contract/{everything}",
+      "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete" ],
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "5s",
+        "PeriodTimespan": 5,
+        "Limit": 1,
+        "HttpStatusCode": 400,
+        "QuotaExceededMessage": "Please wait!"
       }
     }
   ],
@@ -128,6 +163,16 @@
           "Name": "System API",
           "Version": "v1",
           "Url": "http://localhost:5004/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "Contract",
+      "Config": [
+        {
+          "Name": "Contract API",
+          "Version": "v1",
+          "Url": "http://localhost:5005/swagger/v1/swagger.json"
         }
       ]
     }
