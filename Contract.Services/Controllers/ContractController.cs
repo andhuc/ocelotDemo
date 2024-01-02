@@ -116,7 +116,7 @@ namespace Contract.Services.Controllers
             {
 
                 // Add signatures to the contract
-                _signService.SignPdf($"wwwroot/signed/", signatures, contract);
+                _signService.SignMany($"wwwroot/signed/", signatures, contract);
 
                 var fileStream = new FileStream($"wwwroot/signed/{contract.Id}.pdf", FileMode.Open, FileAccess.Read);
 

@@ -4,7 +4,7 @@ namespace Contract.Service.Models
 {
     public interface ISignService
     {
-        void SignPdf(string destPath, List<Signature> signatures, Contract contract);
+        void SignMany(string destPath, List<Signature> signatures, Contract contract);
 
     }
 }

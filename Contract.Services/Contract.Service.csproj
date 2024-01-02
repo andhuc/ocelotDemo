@@ -24,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\prototype\" />
     <Folder Include="wwwroot\signed\" />
   </ItemGroup>
 

@@ -14,7 +14,21 @@ namespace Contract.Service.Models.Implements
         public readonly string KEYSTORE = "Cert/key.p12";
         public readonly char[] PASSWORD = "badssl.com".ToCharArray();
 
-        public void SignPdf(string destPath, List<Signature> signatures, Contract contract)
+        public void SignMany(string destPath, List<Signature> signatures, Contract contract)
+        {
+            string inputPath = destPath + $"{contract.Id}_0.pdf";
+            string ouputPath = destPath + $"{contract.Id}.pdf";
+            File.Copy(contract.Path, inputPath, true);
+
+            foreach (Signature signature in signatures)
+            {
+                SignHash(inputPath, ouputPath, signature);
+
+                File.Copy(ouputPath, inputPath, true);
+            }
+        }
+
+        private void SignHash(string inputPath, string outputPath, Signature signature)
         {
             Pkcs12Store pk12 = new Pkcs12StoreBuilder().Build();
             pk12.Load(new FileStream(KEYSTORE, FileMode.Open, FileAccess.Read), PASSWORD);
@@ -34,21 +48,10 @@ namespace Contract.Service.Models.Implements
                 chain[k] = ce[k].Certificate;
             }
 
-            File.Copy(contract.Path, destPath + $"{contract.Id}_0.pdf", true);
-            int version = 0;
-
-            foreach (var signature in signatures)
-            {
-                string srcPath = destPath + $"{contract.Id}_{version}.pdf";
-                string signedPath = destPath + $"{contract.Id}_{++version}.pdf";
-
-                if (signature == signatures.Last())
-                    signedPath = destPath + $"{contract.Id}.pdf";
-
-                Sign(srcPath, signedPath, chain, pk,
+            Sign(inputPath, outputPath, chain, pk,
                     DigestAlgorithms.SHA256,
                     PdfSigner.CryptoStandard.CMS, signature);
-            }
+
         }
 
         private void Sign(String src, String dest, X509Certificate[] chain,
@@ -56,13 +59,12 @@ namespace Contract.Service.Models.Implements
             Signature signature)
         {
             PdfReader reader = new PdfReader(src);
-
             reader.SetUnethicalReading(true);
 
             // Pass the temporary file's path to the PdfSigner constructor
             using (FileStream fs = new FileStream(dest, FileMode.Create))
             {
-                PdfSigner signer = new PdfSigner(reader, fs, false);
+                PdfSigner signer = new PdfSigner(reader, fs, true);
 
                 // Create the signature appearance
                 Rectangle rect = new Rectangle(signature.X, signature.Y, signature.Width, signature.Height);
