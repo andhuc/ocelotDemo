@@ -70,7 +70,7 @@ namespace Contract.Services.Controllers
         [Route("get")]
         public IActionResult GetContracts()
         {
-            var contracts = _context.Contracts.ToList();
+            var contracts = _context.Contracts.OrderBy(contract => contract.Id).ToList();
             return Ok(contracts);
         }
 

@@ -16,23 +16,31 @@ namespace Contract.Service.Models.Implements
 
         public void SignMany(string destPath, List<Signature> signatures, Contract contract)
         {
+            // Input and output file paths
             string inputPath = destPath + $"{contract.Id}_0.pdf";
-            string ouputPath = destPath + $"{contract.Id}.pdf";
+            string outputPath = destPath + $"{contract.Id}.pdf";
+
+            // Copy the original contract to a temporary file
             File.Copy(contract.Path, inputPath, true);
 
             foreach (Signature signature in signatures)
             {
-                SignHash(inputPath, ouputPath, signature);
+                // Sign the temporary file with the signature
+                Sign(inputPath, outputPath, signature);
 
-                File.Copy(ouputPath, inputPath, true);
+                // Copy the signed file back to the temporary file for multiple signatures
+                File.Copy(outputPath, inputPath, true);
             }
         }
 
-        private void SignHash(string inputPath, string outputPath, Signature signature)
+        private void Sign(string inputPath, string outputPath, Signature signature)
         {
+            // Load the keystore
             Pkcs12Store pk12 = new Pkcs12StoreBuilder().Build();
             pk12.Load(new FileStream(KEYSTORE, FileMode.Open, FileAccess.Read), PASSWORD);
             string alias = null;
+
+            // Find the alias for the key entry in the keystore
             foreach (var a in pk12.Aliases)
             {
                 alias = ((string)a);
@@ -40,6 +48,7 @@ namespace Contract.Service.Models.Implements
                     break;
             }
 
+            // Get the private key and certificate chain from the keystore
             ICipherParameters pk = pk12.GetKey(alias).Key;
             X509CertificateEntry[] ce = pk12.GetCertificateChain(alias);
             X509Certificate[] chain = new X509Certificate[ce.Length];
@@ -48,22 +57,24 @@ namespace Contract.Service.Models.Implements
                 chain[k] = ce[k].Certificate;
             }
 
-            Sign(inputPath, outputPath, chain, pk,
+            // Sign the PDF with the provided signature information
+            SignAppearance(inputPath, outputPath, chain, pk,
                     DigestAlgorithms.SHA256,
                     PdfSigner.CryptoStandard.CMS, signature);
-
         }
 
-        private void Sign(String src, String dest, X509Certificate[] chain,
+        private void SignAppearance(String src, String dest, X509Certificate[] chain,
             ICipherParameters pk, String digestAlgorithm, PdfSigner.CryptoStandard subfilter,
             Signature signature)
         {
+            // Read the original PDF
             PdfReader reader = new PdfReader(src);
             reader.SetUnethicalReading(true);
 
             // Pass the temporary file's path to the PdfSigner constructor
             using (FileStream fs = new FileStream(dest, FileMode.Create))
             {
+                // Create a PdfSigner instance
                 PdfSigner signer = new PdfSigner(reader, fs, true);
 
                 // Create the signature appearance
@@ -78,6 +89,7 @@ namespace Contract.Service.Models.Implements
 
                 appearance.SetLayer2Text(signature.Name);
 
+                // Create a private key signature
                 IExternalSignature pks = new PrivateKeySignature(pk, digestAlgorithm);
 
                 // Sign the document using the detached mode, CMS, or CAdES equivalent.

@@ -114,15 +114,6 @@
       ],
       "UpstreamPathTemplate": "/api/Contract/{everything}",
       "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete" ],
-      "RateLimitOptions": {
-        "ClientWhitelist": [],
-        "EnableRateLimiting": true,
-        "Period": "5s",
-        "PeriodTimespan": 5,
-        "Limit": 1,
-        "HttpStatusCode": 400,
-        "QuotaExceededMessage": "Please wait!"
-      }
     }
   ],
   "SwaggerEndPoints": [
