@@ -4,8 +4,9 @@ using iText.Signatures;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.X509;
-using Contract.Services.Controllers;
 using iText.Kernel.Geom;
+using iText.IO.Font;
+using iText.Kernel.Font;
 
 namespace Contract.Service.Models.Implements
 {
@@ -88,6 +89,10 @@ namespace Contract.Service.Models.Implements
                     .SetPageNumber(signature.Page);
 
                 appearance.SetLayer2Text(signature.Name);
+
+                // Set the font for the appearance (choose a font that supports UTF-8 characters)
+                PdfFont font = PdfFontFactory.CreateFont("Cert/font.ttf", PdfEncodings.IDENTITY_H, true);
+                appearance.SetLayer2Font(font);
 
                 // Create a private key signature
                 IExternalSignature pks = new PrivateKeySignature(pk, digestAlgorithm);

@@ -1,5 +1,7 @@
 using Contract.Service.Models;
 using Contract.Service.Models.Implements;
+using Contract.Service.Services;
+using Contract.Service.Services.Implements;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +11,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<sampleContext>();
 
 builder.Services.AddScoped<ISignService, SignService>();
+builder.Services.AddScoped<IContractService, ContractService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

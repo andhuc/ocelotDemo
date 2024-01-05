@@ -1,7 +1,6 @@
 ﻿using Contract.Service.Models;
-using Contract.Service.Models.Implements;
+using Contract.Service.Services;
 using Microsoft.AspNetCore.Mvc;
-using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace Contract.Services.Controllers
 {
@@ -12,11 +11,13 @@ namespace Contract.Services.Controllers
 
         private readonly sampleContext _context;
         private readonly ISignService _signService;
+        private readonly IContractService _contractService;
 
-        public ContractController(sampleContext context, ISignService signService)
+        public ContractController(sampleContext context, ISignService signService, IContractService contractService)
         {
             _context = context;
             _signService = signService;
+            _contractService = contractService;
         }
 
         [HttpPost]
@@ -30,30 +31,25 @@ namespace Contract.Services.Controllers
 
             try
             {
-                // Create the folder if it doesn't exist
                 var folderPath = Path.Combine("wwwroot", "contract");
                 if (!Directory.Exists(folderPath))
                 {
                     Directory.CreateDirectory(folderPath);
                 }
 
-                // Save the PDF file to the folder
                 var filePath = Path.Combine(folderPath, Guid.NewGuid().ToString() + ".pdf");
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
                     await file.CopyToAsync(fileStream);
                 }
 
-                // Create a new Contract entity
                 var newContract = new Contract.Service.Models.Contract
                 {
                     Title = Path.GetFileNameWithoutExtension(file.FileName),
-                    Path = filePath, // Store the file path in the database
+                    Path = filePath,
                     CreatedAt = DateTime.Now
                 };
 
-
-                // Add the new contract to the database
                 _context.Contracts.Add(newContract);
                 await _context.SaveChangesAsync();
 
@@ -61,18 +57,21 @@ namespace Contract.Services.Controllers
             }
             catch (Exception ex)
             {
-                // Handle exceptions appropriately
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
         [HttpGet]
         [Route("get")]
-        public IActionResult GetContracts()
+        public ActionResult<IEnumerable<Contract.Service.Models.Contract>> GetContracts()
         {
-            var contracts = _context.Contracts.OrderBy(contract => contract.Id).ToList();
+            var contracts = _context.Contracts
+                                    .OrderBy(contract => contract.Id)
+                                    .ToList();
+
             return Ok(contracts);
         }
+
 
         [HttpGet]
         [Route("{id}")]
@@ -82,29 +81,28 @@ namespace Contract.Services.Controllers
 
             if (contract == null)
             {
-                return NotFound(); // Return 404 if the contract is not found
+                return NotFound();
             }
 
             var filePath = isSigned ? $"wwwroot/signed/{id}.pdf" : contract.Path;
 
             if (!System.IO.File.Exists(filePath))
             {
-                return NotFound(); // Return 404 if the file is not found
+                return NotFound();
             }
 
-            // Return the file as a FileStreamResult
             var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            var fileResult = new FileStreamResult(fileStream, "application/pdf"); // Adjust content type based on your file type
-            fileResult.FileDownloadName = $"{contract.Title}.pdf"; // Set the file name
+            var fileResult = new FileStreamResult(fileStream, "application/pdf");
+            fileResult.FileDownloadName = $"{contract.Title}.pdf";
 
             return fileResult;
         }
 
         [HttpPost]
         [Route("sign/{contractId}")]
-        public IActionResult AddSignatures(int contractId, [FromBody] List<Signature> signatures)
+        public IActionResult AddSignatures(int contractId, [FromBody] List<SignatureDTO> signatureDTOs)
         {
-            if (signatures.Count == 0)
+            if (signatureDTOs.Count == 0)
                 return BadRequest("Signature required");
 
             var contract = _context.Contracts.Find(contractId);
@@ -114,34 +112,96 @@ namespace Contract.Services.Controllers
 
             try
             {
+                var signatures = signatureDTOs.Select(dto => new Signature
+                {
+                    X = dto.X,
+                    Y = dto.Y,
+                    Width = dto.Width,
+                    Height = dto.Height,
+                    Name = dto.Name,
+                    Reason = dto.Reason,
+                    Page = dto.Page,
+                    ContractId = contractId
+                }).ToList();
 
-                // Add signatures to the contract
                 _signService.SignMany($"wwwroot/signed/", signatures, contract);
 
                 var fileStream = new FileStream($"wwwroot/signed/{contract.Id}.pdf", FileMode.Open, FileAccess.Read);
 
-                contract.isSigned = true;
+                contract.IsSigned = true;
                 _context.SaveChanges();
 
                 return File(fileStream, "application/pdf", $"{contract.Title}.pdf");
             }
             catch (Exception ex)
             {
-                // Handle exceptions appropriately
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
+        [HttpGet]
+        [Route("getSignature/{contractId}")]
+        public async Task<ActionResult<IEnumerable<Signature>>> GetSignaturesByContractId(int contractId)
+        {
+            var signatures = await _contractService.GetByContractIdAsync(contractId);
+
+            if (signatures == null || !signatures.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(signatures);
+        }
+
+        [HttpPost]
+        [Route("save/{contractId}")]
+        public async Task<ActionResult<IEnumerable<Signature>>> SaveSignaturesByContractId(int contractId, [FromBody] List<SignatureDTO> signatureDTOs)
+        {
+            if (signatureDTOs == null || !signatureDTOs.Any())
+            {
+                return BadRequest("No signatures provided");
+            }
+
+            var deleteResult = await _contractService.DeleteAllByContractIdAsync(contractId);
+
+            if (!deleteResult)
+            {
+                return BadRequest("Failed to delete existing signatures");
+            }
+
+            var savedSignatures = new List<Signature>();
+
+            foreach (var dto in signatureDTOs)
+            {
+                var signature = new Signature
+                {
+                    X = dto.X,
+                    Y = dto.Y,
+                    Width = dto.Width,
+                    Height = dto.Height,
+                    Name = dto.Name,
+                    Reason = dto.Reason,
+                    Page = dto.Page,
+                    ContractId = contractId
+                };
+
+                var savedSignature = await _contractService.CreateAsync(signature);
+                savedSignatures.Add(savedSignature);
+            }
+
+            return Ok(savedSignatures);
+        }
+
     }
 
-    public class Signature
+    public class SignatureDTO
     {
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public string Name { get; set; } = null!;
+        public string Reason { get; set; } = null!;
         public int Page { get; set; }
-        public float X { get; set; }
-        public float Y { get; set; }
-        public float Width { get; set; }
-        public float Height { get; set; }
-        public string Name { get; set; }
-        public string Reason { get; set; }
     }
 }

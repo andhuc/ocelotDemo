@@ -9,7 +9,6 @@ namespace Contract.Service.Models
         public string Title { get; set; } = null!;
         public string Path { get; set; } = null!;
         public DateTime? CreatedAt { get; set; }
-
-        public bool isSigned { get; set; }
+        public bool? IsSigned { get; set; }
     }
 }
