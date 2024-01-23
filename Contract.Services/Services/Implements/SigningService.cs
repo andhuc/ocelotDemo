@@ -27,7 +27,7 @@ namespace Contract.Service.Models.Implements
 
             // Input and output file paths
             string inputPath = Path.Combine(destPath, $"{contract.Id}_0.pdf");
-            string outputPath = Path.Combine(destPath + $"{contract.Id}.pdf");
+            string outputPath = Path.Combine(destPath, $"{contract.Id}.pdf");
 
             // Copy the original contract to a temporary file
             File.Copy(contract.Path, inputPath, true);
