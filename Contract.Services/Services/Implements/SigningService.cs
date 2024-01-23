@@ -12,8 +12,14 @@ namespace Contract.Service.Models.Implements
 {
     public class SigningService : ISigningService
     {
-        public readonly string KEYSTORE = "Cert/key.p12";
-        public readonly char[] PASSWORD = "badssl.com".ToCharArray();
+        public string KEYSTORE;
+        public char[] PASSWORD;
+
+        public SigningService(IConfiguration configuration)
+        {
+            KEYSTORE = configuration["Cert:key"];
+            PASSWORD = configuration["Cert:password"].ToCharArray();
+        }
 
         public void SignMany(string destPath, List<Signature> signatures, Contracts contract)
         {
