@@ -8,8 +8,6 @@ using iText.IO.Font;
 using iText.Kernel.Font;
 using Path = System.IO.Path;
 using iText.IO.Image;
-using iText.Layout.Element;
-using iText.Layout.Properties;
 
 namespace Contract.Service.Models.Implements
 {

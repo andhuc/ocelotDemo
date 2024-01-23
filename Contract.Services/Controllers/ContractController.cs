@@ -35,7 +35,17 @@ namespace Contract.Services.Controllers
                 return BadRequest("Invalid file data");
             }
 
-            try
+			if (file.ContentType != "application/pdf")
+			{
+				return BadRequest("Only PDF files are allowed");
+			}
+
+			if (file.Length > (250 * 1024 * 1024))
+			{
+				return BadRequest("File size exceeds the limit (250 MB)");
+			}
+
+			try
             {
 
                 string filePath = await _storageService.UploadFileAsync(file, "contract");
@@ -78,7 +88,7 @@ namespace Contract.Services.Controllers
                 return NotFound();
             }
 
-            var filePath = isSigned ? $"Uploads/signed/{id}.pdf" : contract.Path;
+            var filePath = isSigned ? $"Storage/signed/{id}.pdf" : contract.Path;
 
             if (!System.IO.File.Exists(filePath))
             {
@@ -109,6 +119,18 @@ namespace Contract.Services.Controllers
 				var signatures = new List<Signature>();
 				foreach (var dto in signatureDTOs)
 				{
+					if (dto.ImageData != null)
+                    {
+						if (!IsValidBase64(dto.ImageData))
+						{
+							return BadRequest("Invalid base64 string for ImageData");
+						}
+
+						if (!IsValidSize(dto.ImageData))
+						{
+							return BadRequest("Image size exceeds the limit of 5MB");
+						}
+					}
 
 					var signature = new Signature
 					{
@@ -194,6 +216,36 @@ namespace Contract.Services.Controllers
 
             return Ok(savedSignatures);
         }
+
+		[HttpDelete]
+		[Route("{id}")]
+		public async Task<IActionResult> DeleteContractAsync(int id)
+		{
+			var contract = await _contractService.GetContractByIdAsync(id);
+
+			if (contract == null)
+			{
+				return NotFound();
+			}
+
+			try
+			{
+				// Delete associated signatures
+				await _signatureService.DeleteAllByContractIdAsync(id);
+
+				// Delete the contract
+				await _contractService.DeleteContractAsync(id);
+
+				// Delete the file
+				System.IO.File.Delete(contract.Path);
+
+				return Ok();
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"Internal server error: {ex.Message}");
+			}
+		}
 
 		private bool IsValidBase64(string base64String)
 		{

@@ -5,10 +5,16 @@ using Contract.Service.Services.Implements;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var configuration = builder.Configuration;
 
+// Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddDbContext<sampleContext>();
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+	options.Configuration = configuration["Redis:ConnectionString"];
+	options.InstanceName = configuration["Redis:InstanceName"];
+});
 
 builder.Services.AddScoped<ISigningService, SigningService>();
 builder.Services.AddScoped<IContractService, ContractService>();
