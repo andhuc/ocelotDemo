@@ -12,12 +12,15 @@ namespace Contract.Services.Controllers
         private readonly sampleContext _context;
         private readonly ISignService _signService;
         private readonly IContractService _contractService;
+        private readonly ISignatureService _signatureService;
 
-        public ContractController(sampleContext context, ISignService signService, IContractService contractService)
+
+        public ContractController(sampleContext context, ISignService signService, IContractService contractService, ISignatureService signatureService)
         {
             _context = context;
             _signService = signService;
             _contractService = contractService;
+            _signatureService = signatureService;
         }
 
         [HttpPost]
@@ -43,7 +46,7 @@ namespace Contract.Services.Controllers
                     await file.CopyToAsync(fileStream);
                 }
 
-                var newContract = new Contract.Service.Models.Contract
+                var newContract = new Contracts
                 {
                     Title = Path.GetFileNameWithoutExtension(file.FileName),
                     Path = filePath,
@@ -63,7 +66,7 @@ namespace Contract.Services.Controllers
 
         [HttpGet]
         [Route("get")]
-        public ActionResult<IEnumerable<Contract.Service.Models.Contract>> GetContracts()
+        public ActionResult<IEnumerable<Contracts>> GetContracts()
         {
             var contracts = _context.Contracts
                                     .OrderBy(contract => contract.Id)
@@ -143,7 +146,7 @@ namespace Contract.Services.Controllers
         [Route("getSignature/{contractId}")]
         public async Task<ActionResult<IEnumerable<Signature>>> GetSignaturesByContractId(int contractId)
         {
-            var signatures = await _contractService.GetByContractIdAsync(contractId);
+            var signatures = await _signatureService.GetByContractIdAsync(contractId);
 
             if (signatures == null || !signatures.Any())
             {
@@ -162,7 +165,7 @@ namespace Contract.Services.Controllers
                 return BadRequest("No signatures provided");
             }
 
-            var deleteResult = await _contractService.DeleteAllByContractIdAsync(contractId);
+            var deleteResult = await _signatureService.DeleteAllByContractIdAsync(contractId);
 
             if (!deleteResult)
             {
@@ -185,7 +188,7 @@ namespace Contract.Services.Controllers
                     ContractId = contractId
                 };
 
-                var savedSignature = await _contractService.CreateAsync(signature);
+                var savedSignature = await _signatureService.CreateAsync(signature);
                 savedSignatures.Add(savedSignature);
             }
 

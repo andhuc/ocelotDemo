@@ -16,7 +16,7 @@ namespace Contract.Service.Models
         {
         }
 
-        public virtual DbSet<Contract> Contracts { get; set; } = null!;
+        public virtual DbSet<Contracts> Contracts { get; set; } = null!;
         public virtual DbSet<Signature> Signatures { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -30,7 +30,7 @@ namespace Contract.Service.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Contract>(entity =>
+            modelBuilder.Entity<Contracts>(entity =>
             {
                 entity.ToTable("contracts");
 

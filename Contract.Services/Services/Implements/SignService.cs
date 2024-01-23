@@ -15,7 +15,7 @@ namespace Contract.Service.Models.Implements
         public readonly string KEYSTORE = "Cert/key.p12";
         public readonly char[] PASSWORD = "badssl.com".ToCharArray();
 
-        public void SignMany(string destPath, List<Signature> signatures, Contract contract)
+        public void SignMany(string destPath, List<Signature> signatures, Contracts contract)
         {
             // Input and output file paths
             string inputPath = destPath + $"{contract.Id}_0.pdf";

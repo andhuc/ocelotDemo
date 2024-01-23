@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Contract.Service.Models
+﻿namespace Contract.Service.Models
 {
-    public partial class Contract
+    public class Contracts
     {
         public int Id { get; set; }
         public string Title { get; set; } = null!;

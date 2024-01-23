@@ -12,6 +12,7 @@ builder.Services.AddDbContext<sampleContext>();
 
 builder.Services.AddScoped<ISignService, SignService>();
 builder.Services.AddScoped<IContractService, ContractService>();
+builder.Services.AddScoped<ISignatureService, SignatureService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
