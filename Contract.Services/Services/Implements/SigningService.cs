@@ -7,6 +7,9 @@ using iText.Kernel.Geom;
 using iText.IO.Font;
 using iText.Kernel.Font;
 using Path = System.IO.Path;
+using iText.IO.Image;
+using iText.Layout.Element;
+using iText.Layout.Properties;
 
 namespace Contract.Service.Models.Implements
 {
@@ -14,12 +17,15 @@ namespace Contract.Service.Models.Implements
     {
         public string KEYSTORE;
         public char[] PASSWORD;
+        public string FONT;
 
         public SigningService(IConfiguration configuration)
         {
             KEYSTORE = configuration["Cert:key"];
             PASSWORD = configuration["Cert:password"].ToCharArray();
-        }
+			FONT = configuration["Cert:font"];
+
+		}
 
         public string SignMany(string destPath, List<Signature> signatures, Contracts contract)
         {
@@ -98,11 +104,21 @@ namespace Contract.Service.Models.Implements
                     .SetPageRect(rect)
                     .SetPageNumber(signature.Page);
 
-                appearance.SetLayer2Text(signature.Name);
+                if (signature.ImageData == null)
+                {
+					appearance.SetLayer2Text(signature.Name);
+					PdfFont font = PdfFontFactory.CreateFont(FONT, PdfEncodings.IDENTITY_H, true);
+					appearance.SetLayer2Font(font);
+				} else
+                {
+					// Convert the base64 encoded image to bytes
+					byte[] imageBytes = Convert.FromBase64String(signature.ImageData);
 
-                // Set the font for the appearance (choose a font that supports UTF-8 characters)
-                PdfFont font = PdfFontFactory.CreateFont("Cert/font.ttf", PdfEncodings.IDENTITY_H, true);
-                appearance.SetLayer2Font(font);
+					// Add the image to the signature appearance
+					ImageData imageData = ImageDataFactory.Create(imageBytes);
+					appearance.SetImage(imageData);
+					appearance.SetLayer2Text("");
+				}
 
                 // Create a private key signature
                 IExternalSignature pks = new PrivateKeySignature(pk, digestAlgorithm);

@@ -2,6 +2,8 @@
 using Contract.Service.Models.DTO;
 using Contract.Service.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Drawing;
+using System.IO;
 
 namespace Contract.Services.Controllers
 {
@@ -104,20 +106,27 @@ namespace Contract.Services.Controllers
 
             try
             {
-                var signatures = signatureDTOs.Select(dto => new Signature
-                {
-                    X = dto.X,
-                    Y = dto.Y,
-                    Width = dto.Width,
-                    Height = dto.Height,
-                    Name = dto.Name,
-                    Reason = dto.Reason,
-                    Page = dto.Page,
-                    ContractId = contractId,
-                    ImageData = dto.ImageData,
-                }).ToList();
+				var signatures = new List<Signature>();
+				foreach (var dto in signatureDTOs)
+				{
 
-                string filePath = _signService.SignMany("signed", signatures, contract);
+					var signature = new Signature
+					{
+						X = dto.X,
+						Y = dto.Y,
+						Width = dto.Width,
+						Height = dto.Height,
+						Name = dto.Name,
+						Reason = dto.Reason,
+						Page = dto.Page,
+						ContractId = contractId,
+						ImageData = dto.ImageData,
+					};
+
+					signatures.Add(signature);
+				}
+
+				string filePath = _signService.SignMany("signed", signatures, contract);
 
                 var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
 
@@ -186,5 +195,26 @@ namespace Contract.Services.Controllers
             return Ok(savedSignatures);
         }
 
-    }
+		private bool IsValidBase64(string base64String)
+		{
+			try
+			{
+				Convert.FromBase64String(base64String);
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+        private bool IsValidSize(string base64String)
+        {
+			// Convert base64 to byte array
+			byte[] imageBytes = Convert.FromBase64String(base64String);
+
+            return imageBytes.Length <= 5 * 1024 * 1024;
+		}
+
+	}
 }
