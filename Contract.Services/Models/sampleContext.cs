@@ -7,13 +7,16 @@ namespace Contract.Service.Models
 {
     public partial class sampleContext : DbContext
     {
+        IConfiguration _configuration;
+
         public sampleContext()
         {
         }
 
-        public sampleContext(DbContextOptions<sampleContext> options)
+        public sampleContext(DbContextOptions<sampleContext> options, IConfiguration configuration)
             : base(options)
         {
+            _configuration = configuration;
         }
 
         public virtual DbSet<Contracts> Contracts { get; set; } = null!;
@@ -23,8 +26,8 @@ namespace Contract.Service.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=sample;Username=admin;Password=admin;");
+                optionsBuilder.UseNpgsql(_configuration["DB:ConnectString"]);
+                
             }
         }
 
