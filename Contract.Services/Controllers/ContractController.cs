@@ -1,4 +1,5 @@
 ﻿using Contract.Service.Models;
+using Contract.Service.Models.DTO;
 using Contract.Service.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,17 +11,19 @@ namespace Contract.Services.Controllers
     {
 
         private readonly sampleContext _context;
-        private readonly ISignService _signService;
+        private readonly ISigningService _signService;
         private readonly IContractService _contractService;
         private readonly ISignatureService _signatureService;
+        private readonly IStorageService _storageService;
 
 
-        public ContractController(sampleContext context, ISignService signService, IContractService contractService, ISignatureService signatureService)
+        public ContractController(sampleContext context, ISigningService signService, IContractService contractService, ISignatureService signatureService, IStorageService storageService)
         {
             _context = context;
             _signService = signService;
             _contractService = contractService;
             _signatureService = signatureService;
+            _storageService = storageService;
         }
 
         [HttpPost]
@@ -34,17 +37,8 @@ namespace Contract.Services.Controllers
 
             try
             {
-                var folderPath = Path.Combine("wwwroot", "contract");
-                if (!Directory.Exists(folderPath))
-                {
-                    Directory.CreateDirectory(folderPath);
-                }
 
-                var filePath = Path.Combine(folderPath, Guid.NewGuid().ToString() + ".pdf");
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(fileStream);
-                }
+                string filePath = await _storageService.UploadFileAsync(file, "contract");
 
                 var newContract = new Contracts
                 {
@@ -53,8 +47,7 @@ namespace Contract.Services.Controllers
                     CreatedAt = DateTime.Now
                 };
 
-                _context.Contracts.Add(newContract);
-                await _context.SaveChangesAsync();
+                await _contractService.AddContractAsync(newContract);
 
                 return Ok();
             }
@@ -66,11 +59,9 @@ namespace Contract.Services.Controllers
 
         [HttpGet]
         [Route("get")]
-        public ActionResult<IEnumerable<Contracts>> GetContracts()
+        public async Task<ActionResult<IEnumerable<Contracts>>> GetContracts()
         {
-            var contracts = _context.Contracts
-                                    .OrderBy(contract => contract.Id)
-                                    .ToList();
+            var contracts = await _contractService.GetContractsAsync();
 
             return Ok(contracts);
         }
@@ -78,16 +69,16 @@ namespace Contract.Services.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        public IActionResult GetContractFile(int id, bool isSigned = false)
+        public async Task<IActionResult> GetContractFileAsync(int id, bool isSigned = false)
         {
-            var contract = _context.Contracts.Find(id);
+            var contract = await _contractService.GetContractByIdAsync(id);
 
             if (contract == null)
             {
                 return NotFound();
             }
 
-            var filePath = isSigned ? $"wwwroot/signed/{id}.pdf" : contract.Path;
+            var filePath = isSigned ? $"Uploads/signed/{id}.pdf" : contract.Path;
 
             if (!System.IO.File.Exists(filePath))
             {
@@ -195,16 +186,5 @@ namespace Contract.Services.Controllers
             return Ok(savedSignatures);
         }
 
-    }
-
-    public class SignatureDTO
-    {
-        public int X { get; set; }
-        public int Y { get; set; }
-        public int Width { get; set; }
-        public int Height { get; set; }
-        public string Name { get; set; } = null!;
-        public string Reason { get; set; } = null!;
-        public int Page { get; set; }
     }
 }

@@ -10,9 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddDbContext<sampleContext>();
 
-builder.Services.AddScoped<ISignService, SignService>();
+builder.Services.AddScoped<ISigningService, SigningService>();
 builder.Services.AddScoped<IContractService, ContractService>();
 builder.Services.AddScoped<ISignatureService, SignatureService>();
+builder.Services.AddScoped<IStorageService, StorageService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

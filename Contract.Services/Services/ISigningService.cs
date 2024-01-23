@@ -2,7 +2,7 @@
 
 namespace Contract.Service.Models
 {
-    public interface ISignService
+    public interface ISigningService
     {
         void SignMany(string destPath, List<Signature> signatures, Contracts contract);
 

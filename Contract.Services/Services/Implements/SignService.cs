@@ -10,7 +10,7 @@ using iText.Kernel.Font;
 
 namespace Contract.Service.Models.Implements
 {
-    public class SignService : ISignService
+    public class SigningService : ISigningService
     {
         public readonly string KEYSTORE = "Cert/key.p12";
         public readonly char[] PASSWORD = "badssl.com".ToCharArray();

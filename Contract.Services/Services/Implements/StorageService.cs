@@ -11,9 +11,10 @@
 
         public async Task<string> UploadFileAsync(IFormFile file, string destination)
         {
+            string uniqueFileName = Guid.NewGuid().ToString() + ".pdf";
 
             var directoryPath = Path.Combine(_uploadDirectory, destination);
-            var filePath = Path.Combine(directoryPath, file.FileName);
+            var filePath = Path.Combine(directoryPath, uniqueFileName);
 
             // Ensure the directory exists
             if (!Directory.Exists(directoryPath))
