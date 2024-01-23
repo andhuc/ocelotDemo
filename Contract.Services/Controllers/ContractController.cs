@@ -113,7 +113,8 @@ namespace Contract.Services.Controllers
                     Name = dto.Name,
                     Reason = dto.Reason,
                     Page = dto.Page,
-                    ContractId = contractId
+                    ContractId = contractId,
+                    ImageData = dto.ImageData,
                 }).ToList();
 
                 string filePath = _signService.SignMany("signed", signatures, contract);
@@ -174,7 +175,8 @@ namespace Contract.Services.Controllers
                     Name = dto.Name,
                     Reason = dto.Reason,
                     Page = dto.Page,
-                    ContractId = contractId
+                    ContractId = contractId,
+                    ImageData = dto.ImageData,
                 };
 
                 var savedSignature = await _signatureService.CreateAsync(signature);

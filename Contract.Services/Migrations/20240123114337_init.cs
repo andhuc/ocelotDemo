@@ -39,7 +39,8 @@ namespace Contract.Service.Migrations
                     height = table.Column<int>(type: "integer", nullable: false),
                     name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     reason = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    page = table.Column<int>(type: "integer", nullable: false)
+                    page = table.Column<int>(type: "integer", nullable: false),
+                    imageData = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {

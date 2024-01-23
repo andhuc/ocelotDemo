@@ -82,7 +82,11 @@ namespace Contract.Service.Models
                 entity.Property(e => e.X).HasColumnName("x");
 
                 entity.Property(e => e.Y).HasColumnName("y");
-            });
+
+				entity.Property(e => e.ImageData)
+                    .HasColumnName("imageData")
+                    .IsRequired(false); ;
+			});
 
             OnModelCreatingPartial(modelBuilder);
         }

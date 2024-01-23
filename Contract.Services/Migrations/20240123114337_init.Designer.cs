@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Contract.Service.Migrations
 {
     [DbContext(typeof(sampleContext))]
-    [Migration("20240123070114_init")]
+    [Migration("20240123114337_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,7 +24,7 @@ namespace Contract.Service.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Contract.Service.Models.Contract", b =>
+            modelBuilder.Entity("Contract.Service.Models.Contracts", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -78,6 +78,11 @@ namespace Contract.Service.Migrations
                     b.Property<int>("Height")
                         .HasColumnType("integer")
                         .HasColumnName("height");
+
+                    b.Property<string>("ImageData")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("imageData");
 
                     b.Property<string>("Name")
                         .IsRequired()

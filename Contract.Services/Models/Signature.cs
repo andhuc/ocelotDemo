@@ -14,5 +14,6 @@ namespace Contract.Service.Models
         public string Name { get; set; } = null!;
         public string Reason { get; set; } = null!;
         public int Page { get; set; }
+        public string? ImageData { get; set; }
     }
 }
