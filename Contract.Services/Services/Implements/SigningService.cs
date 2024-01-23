@@ -1,5 +1,4 @@
-﻿using System.IO;
-using iText.Kernel.Pdf;
+﻿using iText.Kernel.Pdf;
 using iText.Signatures;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Pkcs;
@@ -7,6 +6,7 @@ using Org.BouncyCastle.X509;
 using iText.Kernel.Geom;
 using iText.IO.Font;
 using iText.Kernel.Font;
+using Path = System.IO.Path;
 
 namespace Contract.Service.Models.Implements
 {
@@ -21,11 +21,13 @@ namespace Contract.Service.Models.Implements
             PASSWORD = configuration["Cert:password"].ToCharArray();
         }
 
-        public void SignMany(string destPath, List<Signature> signatures, Contracts contract)
+        public string SignMany(string destPath, List<Signature> signatures, Contracts contract)
         {
+            destPath = Path.Combine("Storage", destPath);
+
             // Input and output file paths
-            string inputPath = destPath + $"{contract.Id}_0.pdf";
-            string outputPath = destPath + $"{contract.Id}.pdf";
+            string inputPath = Path.Combine(destPath, $"{contract.Id}_0.pdf");
+            string outputPath = Path.Combine(destPath + $"{contract.Id}.pdf");
 
             // Copy the original contract to a temporary file
             File.Copy(contract.Path, inputPath, true);
@@ -38,6 +40,8 @@ namespace Contract.Service.Models.Implements
                 // Copy the signed file back to the temporary file for multiple signatures
                 File.Copy(outputPath, inputPath, true);
             }
+
+            return outputPath;
         }
 
         private void Sign(string inputPath, string outputPath, Signature signature)

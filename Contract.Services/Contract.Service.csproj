@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Storage\signed\" />
     <Folder Include="wwwroot\signed\" />
   </ItemGroup>
 

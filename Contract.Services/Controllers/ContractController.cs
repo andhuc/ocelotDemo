@@ -10,16 +10,14 @@ namespace Contract.Services.Controllers
     public class ContractController : Controller
     {
 
-        private readonly sampleContext _context;
         private readonly ISigningService _signService;
         private readonly IContractService _contractService;
         private readonly ISignatureService _signatureService;
         private readonly IStorageService _storageService;
 
 
-        public ContractController(sampleContext context, ISigningService signService, IContractService contractService, ISignatureService signatureService, IStorageService storageService)
+        public ContractController(ISigningService signService, IContractService contractService, ISignatureService signatureService, IStorageService storageService)
         {
-            _context = context;
             _signService = signService;
             _contractService = contractService;
             _signatureService = signatureService;
@@ -94,12 +92,12 @@ namespace Contract.Services.Controllers
 
         [HttpPost]
         [Route("sign/{contractId}")]
-        public IActionResult AddSignatures(int contractId, [FromBody] List<SignatureDTO> signatureDTOs)
+        public async Task<IActionResult> AddSignaturesAsync(int contractId, [FromBody] List<SignatureDTO> signatureDTOs)
         {
             if (signatureDTOs.Count == 0)
                 return BadRequest("Signature required");
 
-            var contract = _context.Contracts.Find(contractId);
+            Contracts contract = await _contractService.GetContractByIdAsync(contractId);
 
             if (contract == null)
                 return NotFound();
@@ -118,12 +116,12 @@ namespace Contract.Services.Controllers
                     ContractId = contractId
                 }).ToList();
 
-                _signService.SignMany($"wwwroot/signed/", signatures, contract);
+                string filePath = _signService.SignMany("signed", signatures, contract);
 
-                var fileStream = new FileStream($"wwwroot/signed/{contract.Id}.pdf", FileMode.Open, FileAccess.Read);
+                var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
 
                 contract.IsSigned = true;
-                _context.SaveChanges();
+                await _contractService.UpdateContractAsync(contract);
 
                 return File(fileStream, "application/pdf", $"{contract.Title}.pdf");
             }
