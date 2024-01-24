@@ -63,7 +63,10 @@ namespace Contract.Service.Services.Implements
         {
             _dbContext.Entry(contract).State = EntityState.Modified;
             await _dbContext.SaveChangesAsync();
-        }
+
+			// Remove the cached data when a new contract is added
+			await _distributedCache.RemoveAsync("contracts");
+		}
 
 		public async Task DeleteContractAsync(int id)
 		{

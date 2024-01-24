@@ -29,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Storage\contract\" />
     <Folder Include="Storage\signed\" />
     <Folder Include="wwwroot\signed\" />
   </ItemGroup>

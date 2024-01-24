@@ -27,25 +27,31 @@ namespace Contract.Service.Models.Implements
 
         public string SignMany(string destPath, List<Signature> signatures, Contracts contract)
         {
-            destPath = Path.Combine("Storage", destPath);
-
-            // Input and output file paths
-            string inputPath = Path.Combine(destPath, $"{contract.Id}_0.pdf");
-            string outputPath = Path.Combine(destPath, $"{contract.Id}.pdf");
-
-            // Copy the original contract to a temporary file
-            File.Copy(contract.Path, inputPath, true);
-
-            foreach (Signature signature in signatures)
+            try
             {
-                // Sign the temporary file with the signature
-                Sign(inputPath, outputPath, signature);
+				destPath = Path.Combine("Storage", destPath);
 
-                // Copy the signed file back to the temporary file for multiple signatures
-                File.Copy(outputPath, inputPath, true);
+				// Input and output file paths
+				string inputPath = Path.Combine(destPath, $"{contract.Id}_0.pdf");
+				string outputPath = Path.Combine(destPath, $"{contract.Id}.pdf");
+
+				// Copy the original contract to a temporary file
+				File.Copy(contract.Path, inputPath, true);
+
+				foreach (Signature signature in signatures)
+				{
+					// Sign the temporary file with the signature
+					Sign(inputPath, outputPath, signature);
+
+					// Copy the signed file back to the temporary file for multiple signatures
+					File.Copy(outputPath, inputPath, true);
+				}
+
+				return outputPath;
+			} catch (Exception ex)
+            {
+                return null;
             }
-
-            return outputPath;
         }
 
         private void Sign(string inputPath, string outputPath, Signature signature)

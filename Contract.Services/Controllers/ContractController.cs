@@ -150,6 +150,11 @@ namespace Contract.Services.Controllers
 
 				string filePath = _signService.SignMany("signed", signatures, contract);
 
+                if (filePath == null)
+                {
+                    return BadRequest("Error");
+                }
+
                 var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
 
                 contract.IsSigned = true;
