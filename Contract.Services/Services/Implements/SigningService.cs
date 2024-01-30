@@ -47,6 +47,9 @@ namespace Contract.Service.Models.Implements
 					File.Copy(outputPath, inputPath, true);
 				}
 
+				// Delete the inputPath (temporary file)
+				File.Delete(inputPath);
+
 				return outputPath;
 			} catch (Exception ex)
             {

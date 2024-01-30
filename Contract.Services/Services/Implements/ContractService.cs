@@ -1,6 +1,7 @@
 ﻿using Contract.Service.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using System.Diagnostics.Contracts;
 using System.Text.Json;
 
 namespace Contract.Service.Services.Implements
@@ -73,11 +74,34 @@ namespace Contract.Service.Services.Implements
 			var contract = await _dbContext.Contracts.FindAsync(id);
 			if (contract != null)
 			{
+				// Delete in DB
+				var signaturesToDelete = await _dbContext.Signatures
+					.Where(s => s.ContractId == id)
+					.ToListAsync();
+
+				if (signaturesToDelete.Any())
+				{
+					_dbContext.Signatures.RemoveRange(signaturesToDelete);
+				}
+
 				_dbContext.Contracts.Remove(contract);
 				await _dbContext.SaveChangesAsync();
 
+				// Delete the contract file
+				DeleteContractFile(contract.Path);
+				DeleteContractFile(Path.Combine("Storage", "signed", $"{id}.pdf"));
+
 				// Remove the cached data when a contract is deleted
 				await _distributedCache.RemoveAsync("contracts");
+			}
+		}
+
+		private void DeleteContractFile(string filePath)
+		{
+			// Add appropriate checks for file existence, permission, etc.
+			if (File.Exists(filePath))
+			{
+				File.Delete(filePath);
 			}
 		}
 

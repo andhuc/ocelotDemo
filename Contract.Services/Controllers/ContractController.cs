@@ -252,6 +252,34 @@ namespace Contract.Services.Controllers
 			}
 		}
 
+		[HttpPost("getBase64String")]
+		[RequestSizeLimit(5 * 1024 * 1024)] // 5MB limit
+		public IActionResult UploadImage()
+		{
+			try
+			{
+				var file = Request.Form.Files[0]; // Assuming only one file is uploaded
+
+				if (file.Length > 0)
+				{
+					using (var ms = new MemoryStream())
+					{
+						file.CopyTo(ms);
+						var imageBytes = ms.ToArray();
+						var base64String = Convert.ToBase64String(imageBytes);
+
+						return Ok(new { Base64String = base64String });
+					}
+				}
+
+				return BadRequest("No file uploaded");
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"Internal server error: {ex.Message}");
+			}
+		}
+
 		private bool IsValidBase64(string base64String)
 		{
 			try
